@@ -8,24 +8,24 @@ const fixtures = require('haraka-test-fixtures')
 //    assert: https://nodejs.org/api/assert.html
 
 beforeEach(() => {
-  this.plugin = new fixtures.plugin('queue-rabbitmq')
+  this.plugin = new fixtures.plugin('rabbitmq')
 })
 
-describe('queue-rabbitmq', () => {
+describe('rabbitmq', () => {
   it('loads', () => {
     assert.ok(this.plugin)
   })
 })
 
 describe('load_queue-rabbitmq_ini', () => {
-  it('loads queue-rabbitmq.ini from config/queue-rabbitmq.ini', () => {
-    this.plugin.load_queue-rabbitmq_ini()
+  it('loads rabbitmq.ini from config/rabbitmq.ini', () => {
+    this.plugin.load_rabbitmq_ini()
     assert.ok(this.plugin.cfg)
   })
 
   it('initializes enabled boolean', () => {
-    this.plugin.load_queue-rabbitmq_ini()
-    assert.equal(this.plugin.cfg.main.enabled, true, this.plugin.cfg)
+    this.plugin.load_rabbitmq_ini()
+    assert.equal(this.plugin.cfg.rabbitmq.confirm, true, this.plugin.cfg)
   })
 })
 
