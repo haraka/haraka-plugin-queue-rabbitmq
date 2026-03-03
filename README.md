@@ -1,69 +1,104 @@
 [![CI Test Status][ci-img]][ci-url]
 [![Code Climate][clim-img]][clim-url]
 
-# haraka-plugin-template
+# haraka-plugin-queue-rabbitmq
 
-Clone me, to create a new Haraka plugin!
+Delivers mails to rabbitmq queue for further processing.
 
-## Template Instructions
-
-These instructions will not self-destruct after use. Use and destroy.
-
-See also, [How to Write a Plugin](https://github.com/haraka/Haraka/wiki/Write-a-Plugin) and [Plugins.md](https://github.com/haraka/Haraka/blob/master/docs/Plugins.md) for additional plugin writing information.
-
-## Create a new repo for your plugin
-
-Haraka plugins are named like `haraka-plugin-something`. All the namespace after `haraka-plugin-` is yours for the taking. Please check the [Plugins](https://github.com/haraka/Haraka/blob/master/Plugins.md) page and a Google search to see what plugins already exist.
-
-Once you've settled on a name, create the GitHub repo. On the [template repo's main page](https://github.com/haraka/haraka-plugin-template), click the _Use this template_ button and create your new repository. Then paste that URL into a local ENV variable with a command like this:
-
-```sh
-export MY_GITHUB_ORG=haraka
-export MY_PLUGIN_NAME=haraka-plugin-SOMETHING
-```
-
-Clone and rename the template repo:
-
-```sh
-git clone git@github.com:haraka/$MY_GITHUB_ORG/$MY_PLUGIN_NAME.git
-cd $MY_PLUGIN_NAME
-```
-
-Now you'll have a local git repo to begin authoring your plugin
-
-## rename boilerplate
-
-Replaces all uses of the word `template` with your plugin's name.
-
-./redress.sh [something]
-
-You'll then be prompted to update package.json and then force push this repo onto the GitHub repo you've created earlier.
-
-# Add your content here
+More information about rabbitmq can be found at https://www.rabbitmq.com/
 
 ## INSTALL
 
 ```sh
 cd /path/to/local/haraka
-npm install haraka-plugin-template
-echo "template" >> config/plugins
+npm install haraka-plugin-queue-rabbitmq
+echo "queue-rabbitmq" >> config/plugins
 service haraka restart
 ```
 
 ### Configuration
 
-If the default configuration is not sufficient, copy the config file from the distribution into your haraka config dir and then modify it:
+Copy the config file from the distribution into your haraka config dir and then modify it:
 
 ```sh
-cp node_modules/haraka-plugin-template/config/template.ini config/template.ini
-$EDITOR config/template.ini
+cp node_modules/haraka-plugin-queue-rabbitmq/config/rabbitmq.ini config/rabbitmq.ini
+$EDITOR config/rabbitmq.ini
+```
+
+This plugin merges the rabbitmq and rabbitmq_ampqlib plugins. The selector is main.module and defaults to the original `rabbitmq` plugin.
+
+This example config file provides server address and port of rabbitmq server to deliver with other configs of queues and exchange.
+
+```ini
+[main]
+; module= amqp || amqplib
+module=amqp
+
+[rabbitmq]
+; This is name of exchange.
+exchangeName  = emailMessages
+; ip and port of the server.
+server_ip = localhost
+server_port = 5672
+; user and password
+user = guest
+password = guest
+; name of the queue which reader will read
+queueName = email
+; This is for making it persistant while publishing message
+deliveryMode = 2
+; If true it will require ack for marking it complete from worker
+confirm = true
+; Again for persistance passed while creating queue
+durable = true
+; if true will delete queue if publisher quits
+autoDelete = false
+; type of the exchange
+exchangeType = direct
+
+
+[amqplib]
+; Connection
+; Protocol. Either "amqp" or "amqps"
+protocol = amqp
+host = localhost
+port = 5672
+;Virtual Host. Start with "/". Leave blank or not use if you don't want to use virtual hosts.
+vhost = /haraka
+;Credentials
+user = guest
+password = guest
+; Exchange
+exchangeName  = email_messages
+exchangeType = direct
+; Queue
+queueName = emails
+confirm = true
+durable = true
+autoDelete = false
+; Message
+deliveryMode = 2
+priority = 1
+
+; Optional exchange arguments
+; More information about exchange x-arguments can be found at https://www.rabbitmq.com/docs/exchanges#optional-arguments
+[exchange_args]
+alternate-exchange =
+
+; Optional queue arguments
+; More information about queue x-arguments can be found at https://www.rabbitmq.com/queues.html#optional-arguments
+[queue_args]
+x-dead-letter-exchange =
+x-dead-letter-routing-key = emails_dlq
+x-overflow = reject-publish
+x-queue-type = quorum
 ```
 
 ## USAGE
 
 <!-- leave these buried at the bottom of the document -->
 
-[ci-img]: https://github.com/haraka/haraka-plugin-template/actions/workflows/ci.yml/badge.svg
-[ci-url]: https://github.com/haraka/haraka-plugin-template/actions/workflows/ci.yml
-[clim-img]: https://codeclimate.com/github/haraka/haraka-plugin-template/badges/gpa.svg
-[clim-url]: https://codeclimate.com/github/haraka/haraka-plugin-template
+[ci-img]: https://github.com/haraka/haraka-plugin-queue-rabbitmq/actions/workflows/ci.yml/badge.svg
+[ci-url]: https://github.com/haraka/haraka-plugin-queue-rabbitmq/actions/workflows/ci.yml
+[clim-img]: https://codeclimate.com/github/haraka/haraka-plugin-queue-rabbitmq/badges/gpa.svg
+[clim-url]: https://codeclimate.com/github/haraka/haraka-plugin-queue-rabbitmq
