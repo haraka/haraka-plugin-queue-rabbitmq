@@ -25,7 +25,7 @@ describe('load_queue-rabbitmq_ini', () => {
 
   it('initializes enabled boolean', () => {
     this.plugin.load_rabbitmq_ini()
-    assert.equal(this.plugin.cfg.main.enabled, true, this.plugin.cfg)
+    assert.equal(this.plugin.cfg.rabbitmq.confirm, true, this.plugin.cfg)
   })
 })
 
