@@ -19,7 +19,7 @@ exports.register = function () {
     amqp = require('amqp')
     this.logdebug('About to connect and initialize queue object')
     this.init_rabbitmq_server()
-    register_hook('queue', 'amqp_queue')
+    this.register_hook('queue', 'amqp_queue')
     this.logdebug(`Finished initiating : ${exports.exchangeMapping[exchangeName + queueName]}`)
   }
   else if (this.cfg.main.module === 'amqplib') {
@@ -30,7 +30,7 @@ exports.register = function () {
 
 exports.load_rabbitmq_ini = function () {
   this.cfg = this.config.get(
-    'queue-rabbitmq.ini',
+    'rabbitmq.ini',
     {
       booleans: [
         '+rabbitmq.confirm',
@@ -212,7 +212,7 @@ exports.init_amqp_connection = function () {
                         durable,
                         arguments: this.cfg.exchange_args,
                     },
-                    (err3, ok) => {
+                    (err3) => {
                         if (err3) {
                             this.logerror(`Error asserting rabbitmq exchange: ${err3}`)
                             return conn.close()
